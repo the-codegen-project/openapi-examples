@@ -1,0 +1,2234 @@
+{
+	"info": {
+		"contact": {
+			"email": "apisupport@sallinggroup.com",
+			"name": "Salling Group API team"
+		},
+		"description": "Salling Group makes a number of data APIs available for public consumption. Access to these APIs is granted gratis, but requires the acceptance of our terms and conditions and the creation of a user on our developer portal.",
+		"title": "Salling Group Public APIs",
+		"version": "1"
+	},
+	"externalDocs": {
+		"description": "Visit our Developer Portal",
+		"url": "https://developer.sallinggroup.com"
+	},
+	"openapi": "3.0.2",
+	"servers": [
+		{
+			"url": "https://api.sallinggroup.com",
+			"description": "API Gateway"
+		}
+	],
+	"tags": [
+		{
+			"name": "Food Waste",
+			"description": "To help with food waste, Salling Group provides food discounts information in all our supermarkets. Each user can send maximum 1,000 requests per day."
+		},
+		{
+			"name": "Holidays",
+			"description": "Danish national holidays — future, present, and past."
+		},
+		{
+			"name": "Jobs",
+			"description": "All open job vacancies in Salling Group."
+		},
+		{
+			"name": "Product Suggestions",
+			"description": "Salling Group has a lot of products. These suggestions help you find relevant ones. Each user can send maximum 10,000 requests per month."
+		},
+		{
+			"name": "Stores",
+			"description": "Salling Group's physical stores with addresses, opening hours, and more."
+		}
+	],
+	"paths": {
+		"/v1/holidays": {
+			"get": {
+				"operationId": "getHolidays",
+				"tags": ["Holidays"],
+				"summary": "List all Danish holidays within the given range.",
+				"description": "Note that several holidays can fall on the same date and that both startDate and endDate are included in the range.",
+				"parameters": [
+					{
+						"name": "startDate",
+						"in": "query",
+						"description": "Include only holidays that fall after or on this date. Format is (YYYY-MM-DD).",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "endDate",
+						"in": "query",
+						"description": "Include only holidays that fall before or on this date. Format is (YYYY-MM-DD).",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "translation",
+						"in": "query",
+						"description": "Translate the names of all holidays to the given culture. The holidays will match Danish law regardless of translation. For instance, \"translation=en-us\" will not output American holidays, but rather Danish holidays translated to American English. Format is ISO 639-1 and ISO 3166-1 with a dash between them.",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"default": "da-dk",
+							"enum": ["da-dk", "en-us"]
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "List of holidays.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Holiday"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/400"
+					},
+					"401": {
+						"$ref": "#/components/responses/401"
+					},
+					"403": {
+						"$ref": "#/components/responses/403"
+					},
+					"429": {
+						"$ref": "#/components/responses/429"
+					},
+					"500": {
+						"$ref": "#/components/responses/500"
+					},
+					"503": {
+						"$ref": "#/components/responses/503"
+					},
+					"504": {
+						"$ref": "#/components/responses/504"
+					}
+				},
+				"security": [
+					{
+						"Bearer": []
+					},
+					{
+						"JWT": []
+					}
+				]
+			}
+		},
+		"/v1/holidays/is-holiday": {
+			"get": {
+				"summary": "Decide whether a given date is a holiday or not.",
+				"description": "Simple check whether a given date is a holiday or not",
+				"operationId": "isHoliday",
+				"tags": ["Holidays"],
+				"parameters": [
+					{
+						"name": "date",
+						"in": "query",
+						"description": "The date to query. Format is (YYYY-MM-DD). Defaults to current date.",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "True if the date is a holiday, false if it is not.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "boolean",
+									"example": true,
+									"description": "Is the given date a holiday?"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/400"
+					},
+					"401": {
+						"$ref": "#/components/responses/401"
+					},
+					"403": {
+						"$ref": "#/components/responses/403"
+					},
+					"429": {
+						"$ref": "#/components/responses/429"
+					},
+					"500": {
+						"$ref": "#/components/responses/500"
+					},
+					"503": {
+						"$ref": "#/components/responses/503"
+					},
+					"504": {
+						"$ref": "#/components/responses/504"
+					}
+				},
+				"security": [
+					{
+						"Bearer": []
+					},
+					{
+						"JWT": []
+					}
+				]
+			}
+		},
+		"/v1/jobs": {
+			"get": {
+				"summary": "List open job vacancies in Salling Group.",
+				"description": "Each job entity includes a lot of information, so consider using pagination and field parameters to limit the response body size when making broad queries.",
+				"operationId": "getJobs",
+				"tags": ["Jobs"],
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/base-brands"
+					},
+					{
+						"$ref": "#/components/parameters/categories"
+					},
+					{
+						"$ref": "#/components/parameters/city"
+					},
+					{
+						"$ref": "#/components/parameters/country"
+					},
+					{
+						"$ref": "#/components/parameters/employmentType"
+					},
+					{
+						"$ref": "#/components/parameters/fields"
+					},
+					{
+						"$ref": "#/components/parameters/jobLevel"
+					},
+					{
+						"$ref": "#/components/parameters/page"
+					},
+					{
+						"$ref": "#/components/parameters/per_page"
+					},
+					{
+						"$ref": "#/components/parameters/region"
+					},
+					{
+						"$ref": "#/components/parameters/zip"
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Job"
+									}
+								}
+							}
+						},
+						"description": "An array of job vacancies"
+					},
+					"400": {
+						"$ref": "#/components/responses/400"
+					},
+					"401": {
+						"$ref": "#/components/responses/401"
+					},
+					"403": {
+						"$ref": "#/components/responses/403"
+					},
+					"429": {
+						"$ref": "#/components/responses/429"
+					},
+					"500": {
+						"$ref": "#/components/responses/500"
+					},
+					"503": {
+						"$ref": "#/components/responses/503"
+					},
+					"504": {
+						"$ref": "#/components/responses/504"
+					}
+				},
+				"security": [
+					{
+						"Bearer": []
+					},
+					{
+						"JWT": []
+					}
+				]
+			}
+		},
+		"/v1/jobs/{id}": {
+			"get": {
+				"summary": "Fetch a specific open job vacancy in Salling Group.",
+				"description": "The id to put in the path is the same as those in the id field of the body.",
+				"operationId": "getJobsById",
+				"tags": ["Jobs"],
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/id"
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Job"
+								}
+							}
+						},
+						"description": "A single job vacancy"
+					},
+					"400": {
+						"$ref": "#/components/responses/400"
+					},
+					"401": {
+						"$ref": "#/components/responses/401"
+					},
+					"403": {
+						"$ref": "#/components/responses/403"
+					},
+					"429": {
+						"$ref": "#/components/responses/429"
+					},
+					"500": {
+						"$ref": "#/components/responses/500"
+					},
+					"503": {
+						"$ref": "#/components/responses/503"
+					},
+					"504": {
+						"$ref": "#/components/responses/504"
+					}
+				},
+				"security": [
+					{
+						"Bearer": []
+					},
+					{
+						"JWT": []
+					}
+				]
+			}
+		},
+		"/v1-beta/product-suggestions/relevant-products": {
+			"get": {
+				"description": "Returns a list of product suggestions for the given query. Ordered by descending relevance.",
+				"operationId": "getRelevantProducts",
+				"parameters": [
+					{
+						"name": "query",
+						"description": "The term you want to find product suggestions for.",
+						"example": "mælk",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuggestionsObject"
+								}
+							}
+						},
+						"description": "A list of suggested products"
+					},
+					"400": {
+						"$ref": "#/components/responses/400"
+					},
+					"401": {
+						"$ref": "#/components/responses/401"
+					},
+					"403": {
+						"$ref": "#/components/responses/403"
+					},
+					"429": {
+						"$ref": "#/components/responses/429"
+					},
+					"500": {
+						"$ref": "#/components/responses/500"
+					},
+					"503": {
+						"$ref": "#/components/responses/503"
+					},
+					"504": {
+						"$ref": "#/components/responses/504"
+					}
+				},
+				"tags": ["Product Suggestions"],
+				"security": [
+					{
+						"Bearer": []
+					},
+					{
+						"JWT": []
+					}
+				],
+				"summary": "List relevants products given a query string."
+			}
+		},
+		"/v1-beta/product-suggestions/similar-products": {
+			"get": {
+				"description": "Helpful for finding products that are similar to or could be used as an alternative for a given Bilka ToGo product. Ordered by descending relevance.",
+				"operationId": "getSimilarProducts",
+				"parameters": [
+					{
+						"name": "productId",
+						"description": "A Bilka ToGo product ID.",
+						"in": "query",
+						"example": "39386",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Suggestions"
+								}
+							}
+						},
+						"description": "An array of suggested similar products"
+					},
+					"400": {
+						"$ref": "#/components/responses/400"
+					},
+					"401": {
+						"$ref": "#/components/responses/401"
+					},
+					"403": {
+						"$ref": "#/components/responses/403"
+					},
+					"429": {
+						"$ref": "#/components/responses/429"
+					},
+					"500": {
+						"$ref": "#/components/responses/500"
+					},
+					"503": {
+						"$ref": "#/components/responses/503"
+					},
+					"504": {
+						"$ref": "#/components/responses/504"
+					}
+				},
+				"tags": ["Product Suggestions"],
+				"security": [
+					{
+						"Bearer": []
+					},
+					{
+						"JWT": []
+					}
+				],
+				"summary": "List products that are similar to a given Bilka ToGo product ID."
+			}
+		},
+		"/v1-beta/product-suggestions/frequently-bought-together": {
+			"get": {
+				"description": "Get product suggestions for products that are most frequently bought together with the supplied Bilka ToGo product ID. Ordered by descending relevance.",
+				"operationId": "getFrequentlyBoughtTogetherProducts",
+				"parameters": [
+					{
+						"name": "productId",
+						"description": "A Bilka ToGo product ID",
+						"in": "query",
+						"example": "39386",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Suggestions"
+								}
+							}
+						},
+						"description": "An array of suggested similar products"
+					},
+					"400": {
+						"$ref": "#/components/responses/400"
+					},
+					"401": {
+						"$ref": "#/components/responses/401"
+					},
+					"403": {
+						"$ref": "#/components/responses/403"
+					},
+					"429": {
+						"$ref": "#/components/responses/429"
+					},
+					"500": {
+						"$ref": "#/components/responses/500"
+					},
+					"503": {
+						"$ref": "#/components/responses/503"
+					},
+					"504": {
+						"$ref": "#/components/responses/504"
+					}
+				},
+				"tags": ["Product Suggestions"],
+				"security": [
+					{
+						"Bearer": []
+					},
+					{
+						"JWT": []
+					}
+				],
+				"summary": "List products that are frequently bought together with a given Bilka ToGo product ID."
+			}
+		},
+		"/v2/stores": {
+			"get": {
+				"summary": "List Salling Group Stores. Use fields parameter to get just the information needed.",
+				"description": "Includes information about department opening hours for garden centers and bakeries, as well as including all fields by default.",
+				"operationId": "getStores",
+				"tags": ["Stores"],
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/base-brands"
+					},
+					{
+						"$ref": "#/components/parameters/city"
+					},
+					{
+						"$ref": "#/components/parameters/country"
+					},
+					{
+						"$ref": "#/components/parameters/fields"
+					},
+					{
+						"$ref": "#/components/parameters/geo"
+					},
+					{
+						"$ref": "#/components/parameters/hourType"
+					},
+					{
+						"$ref": "#/components/parameters/page"
+					},
+					{
+						"$ref": "#/components/parameters/per_page"
+					},
+					{
+						"$ref": "#/components/parameters/radius"
+					},
+					{
+						"$ref": "#/components/parameters/zip"
+					},
+					{
+						"description": "Only return stores where the `babyChanging` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "babyChanging",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only return stores where the `bakery` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "bakery",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only return stores where the `carlsJunior` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "carlsJunior",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only return stores where the `clickAndCollect` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "clickAndCollect",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only return stores where the `enablingFacilities` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "enablingFacilities",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only return stores where the `flowers` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "flowers",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only return stores where the `foodClickAndCollect` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "foodClickAndCollect",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only return stores where the `garden` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "garden",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only return stores where the `holidayOpen` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "holidayOpen",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only return stores where the `nonFood` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "nonFood",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only return stores where the `open247` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "open247",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only return stores where the `parking` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "parking",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only return stores where the `parkingRestrictions` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "parkingRestrictions",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only return stores where the `petFood` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "petFood",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only return stores where the `pharmacy` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "pharmacy",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only return stores where the `scanAndGo` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "scanAndGo",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only return stores where the `smileyscheme` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "smileyscheme",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Only return stores where the `spotFood` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "spotFood",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only return stores where the `spotNonfood` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "spotNonfood",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only return stores where the `starbucks` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "starbucks",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only return stores where the `swipBox` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "swipBox",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only return stores where the `wc` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "wc",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only return stores where the `wifi` attribute is defined and has the given value. Will return stores regardless of this attribute's value if omitted. If the store doesn't have this attribute, it will be omitted if you specify this parameter.",
+						"in": "query",
+						"name": "wifi",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Store"
+									}
+								}
+							}
+						},
+						"description": "An array of stores"
+					},
+					"400": {
+						"$ref": "#/components/responses/400"
+					},
+					"401": {
+						"$ref": "#/components/responses/401"
+					},
+					"403": {
+						"$ref": "#/components/responses/403"
+					},
+					"429": {
+						"$ref": "#/components/responses/429"
+					},
+					"500": {
+						"$ref": "#/components/responses/500"
+					},
+					"503": {
+						"$ref": "#/components/responses/503"
+					},
+					"504": {
+						"$ref": "#/components/responses/504"
+					}
+				},
+				"security": [
+					{
+						"Bearer": []
+					},
+					{
+						"JWT": []
+					}
+				]
+			}
+		},
+		"/v2/stores/{id}": {
+			"get": {
+				"description": "Get a single store",
+				"operationId": "getStoresById",
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/fields"
+					},
+					{
+						"$ref": "#/components/parameters/id"
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Store"
+								}
+							}
+						},
+						"description": "A single store"
+					},
+					"400": {
+						"$ref": "#/components/responses/400"
+					},
+					"401": {
+						"$ref": "#/components/responses/401"
+					},
+					"403": {
+						"$ref": "#/components/responses/403"
+					},
+					"429": {
+						"$ref": "#/components/responses/429"
+					},
+					"500": {
+						"$ref": "#/components/responses/500"
+					},
+					"503": {
+						"$ref": "#/components/responses/503"
+					},
+					"504": {
+						"$ref": "#/components/responses/504"
+					}
+				},
+				"security": [
+					{
+						"Bearer": []
+					},
+					{
+						"JWT": []
+					}
+				],
+				"summary": "Fetch a single store with the v2 format including opening hours for departments.",
+				"tags": ["Stores"]
+			}
+		},
+		"/v2/stores/{id}/schedules": {
+			"get": {
+				"description": "Get the schedules for opening hours and any upcoming deviations.",
+				"operationId": "getStoreSchedules",
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/id"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "A list of valid schedules for the store",
+						"content": {
+							"application/json": {
+								"schema": {
+									"example": {
+										"chain": {
+											"deviations": [],
+											"schedules": [
+												{
+													"friday": {
+														"closeTime": "23:00",
+														"openTime": "07:00"
+													},
+													"monday": {
+														"closeTime": "23:00",
+														"openTime": "07:00"
+													},
+													"name": "Nye åbningstider - Bilka (pr. 31/01/2020)",
+													"saturday": {
+														"closeTime": "23:00",
+														"openTime": "07:00"
+													},
+													"sunday": {
+														"closeTime": "23:00",
+														"openTime": "07:00"
+													},
+													"thursday": {
+														"closeTime": "23:00",
+														"openTime": "07:00"
+													},
+													"tuesday": {
+														"closeTime": "23:00",
+														"openTime": "07:00"
+													},
+													"validFrom": "2020-01-31",
+													"validTo": "2999-02-01",
+													"wednesday": {
+														"closeTime": "23:00",
+														"openTime": "07:00"
+													}
+												}
+											]
+										},
+										"store": {
+											"deviations": [
+												{
+													"closeTime": "15:00",
+													"name": "Juleaftensdag",
+													"openTime": "9:00",
+													"validFrom": "2020-12-24",
+													"validTo": "2020-12-24"
+												}
+											],
+											"schedules": []
+										}
+									},
+									"properties": {
+										"chain": {
+											"properties": {
+												"deviations": {
+													"items": {
+														"$ref": "#/components/schemas/Deviation"
+													},
+													"type": "array"
+												},
+												"schedules": {
+													"items": {
+														"$ref": "#/components/schemas/Schedule"
+													},
+													"type": "array"
+												}
+											},
+											"type": "object"
+										},
+										"store": {
+											"properties": {
+												"deviations": {
+													"items": {
+														"$ref": "#/components/schemas/Deviation"
+													},
+													"type": "array"
+												},
+												"schedules": {
+													"items": {
+														"$ref": "#/components/schemas/Schedule"
+													},
+													"type": "array"
+												}
+											},
+											"type": "object"
+										}
+									},
+									"type": "object"
+								}
+							}
+						}
+					},
+					"404": {
+						"$ref": "#/components/responses/404"
+					},
+					"500": {
+						"$ref": "#/components/responses/500"
+					},
+					"503": {
+						"$ref": "#/components/responses/503"
+					},
+					"504": {
+						"$ref": "#/components/responses/504"
+					}
+				},
+				"security": [
+					{
+						"Bearer": []
+					},
+					{
+						"JWT": []
+					}
+				],
+				"summary": "Get the schedules for opening hours and any upcoming deviations.",
+				"tags": ["Stores"]
+			}
+		},
+		"/v1/food-waste": {
+			"get": {
+				"description": "Get nearby stores along with their current clearance sales. At most 20 stores are returned by per request. You must supply either `zip` or `geo`.",
+				"summary": "Get nearby stores along with their current clearance sales.",
+				"operationId": "getFoodWaste",
+				"tags": ["Food Waste"],
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/geo"
+					},
+					{
+						"$ref": "#/components/parameters/radius"
+					},
+					{
+						"$ref": "#/components/parameters/zip"
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/FoodWaste"
+									},
+									"type": "array"
+								}
+							}
+						},
+						"description": "Gives you a list of stores and their current sales on food. If a product is uncategorized, clearances[*].product.categories is omitted from the response."
+					},
+					"400": {
+						"description": "Bad request. We could not make sense of your query. See the developerMessage in the body for details.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"example": {
+									"code": 3000,
+									"developerMessage": "There are no qualified Foetex, Netto or Bilka stores.",
+									"statusCode": 400
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized. We did not recognize the request's credentials and don't know who you are.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"example": {
+									"code": 3000,
+									"developerMessage": "Request failed with status code 404",
+									"statusCode": 401
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"503": {
+						"$ref": "#/components/responses/503"
+					},
+					"504": {
+						"$ref": "#/components/responses/504"
+					}
+				},
+				"security": [
+					{
+						"Bearer": []
+					},
+					{
+						"JWT": []
+					}
+				]
+			}
+		},
+		"/v1/food-waste/{id}": {
+			"get": {
+				"description": "Get a single store along with its current clearance sales. You can find our stores' ids through our '/v2/stores/' API.",
+				"summary": "Get a single store along with its current clearance sales.",
+				"operationId": "getFoodWasteByStoreId",
+				"tags": ["Food Waste"],
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/id"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Gives you a store along with its current clearance sales. If a product is uncategorized, clearances[*].product.categories is omitted from the response.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/FoodWaste"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request. The queried store is not one of Foetex, Netto or Bilka in Denmark or no id is provided.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"example": {
+									"code": 3000,
+									"developerMessage": "Only Foetex, Netto or Bilka has food waste.",
+									"statusCode": 400
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized. We did not recognize the request's credentials and don't know who you are.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"example": {
+									"code": 3000,
+									"developerMessage": "Request failed with status code 404",
+									"statusCode": 404
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "The requested store ID does not exist.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"example": {
+									"code": 1000,
+									"statusCode": 401
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"503": {
+						"$ref": "#/components/responses/503"
+					},
+					"504": {
+						"$ref": "#/components/responses/504"
+					}
+				},
+				"security": [
+					{
+						"Bearer": []
+					},
+					{
+						"JWT": []
+					}
+				]
+			}
+		}
+	},
+	"components": {
+		"parameters": {
+			"base-brands": {
+				"description": "Only return entities from the given brand. Will return entities of any brand if omitted or empty. Brand is case insensitive.",
+				"in": "query",
+				"name": "brand",
+				"required": false,
+				"schema": {
+					"enum": [
+						"bilka",
+						"foetex",
+						"netto",
+						"basalt",
+						"salling",
+						"br",
+						"carlsjr",
+						"starbucks",
+						"hugoboss",
+						"matinique"
+					],
+					"type": "string"
+				}
+			},
+			"categories": {
+				"description": "Only return entities with one of the categories supplied in a comma separated list.",
+				"in": "query",
+				"name": "categories",
+				"required": false,
+				"schema": {
+					"type": "array",
+					"items": {
+						"$ref": "#/components/schemas/JobCategory"
+					}
+				}
+			},
+			"city": {
+				"description": "Only return entities located in this city. Will return entities in any city if omitted or empty. City must be an exact (but case-insensitive) match: requesting e.g. city=københavn will not match any entity, but city=københavn nv will.",
+				"in": "query",
+				"name": "city",
+				"required": false,
+				"schema": {
+					"type": "string"
+				}
+			},
+			"country": {
+				"description": "Only return entities located in this country. The country code should be using the [ISO-3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) format.",
+				"in": "query",
+				"name": "country",
+				"required": false,
+				"schema": {
+					"enum": ["DK", "DE", "SE", "PL"],
+					"type": "string"
+				}
+			},
+			"employmentType": {
+				"description": "Specify this to return either only full time positions or part time positions. If unspecified, jobs are returned irrespective of whether they are full time or part time.",
+				"in": "query",
+				"name": "employmentType",
+				"required": false,
+				"example": "fullTime",
+				"schema": {
+					"type": "string",
+					"enum": ["fullTime", "partTime"]
+				}
+			},
+			"fields": {
+				"description": "A comma separated list of fields to return in the response. This will return **only** those fields for each entities, and no others.",
+				"in": "query",
+				"name": "fields",
+				"required": false,
+				"schema": {
+					"format": "csv",
+					"type": "string"
+				}
+			},
+			"geo": {
+				"description": "Only return entities near the given geocode. Will return entities with any geocode if omitted or empty. Takes a comma-separated string of latitude comma longitude, e.g. geo=55.10,10.1. Combine with the radius filter to control how close entities must be to the geocode to be included. Note: this field is truncated to 4 digits of precision after the decimal point.",
+				"in": "query",
+				"name": "geo",
+				"required": false,
+				"schema": {
+					"format": "csv",
+					"maxItems": 1,
+					"type": "string"
+				}
+			},
+			"hourType": {
+				"description": "Only return opening hours of this specific type. Will not filter which stores are being returned, but will act as a filter on the hours collection of each store. This is intended for if you need for example only opening hours for the bakery or the gardencenter, instead of the actual stores. \n\n __Explanation of non-English types__\n\n* `pakketarn` Package pickup tower.\n* `vareudlevering` Pickup location.\n ",
+				"in": "query",
+				"name": "hourType",
+				"required": false,
+				"schema": {
+					"type": "string",
+					"enum": [
+						"store",
+						"gardencenter",
+						"bakery",
+						"bilkatogo",
+						"foodClickCollect",
+						"nonfoodClickCollect",
+						"flowers",
+						"vareudlevering",
+						"servicecenter",
+						"bistro",
+						"quickfood",
+						"sushi",
+						"pakketarn"
+					]
+				}
+			},
+			"id": {
+				"description": "The id of the entity you want to get",
+				"in": "path",
+				"name": "id",
+				"required": true,
+				"schema": {
+					"format": "uuid",
+					"type": "string"
+				}
+			},
+			"jobLevel": {
+				"description": "What kind of position is this? Management, apprenticeship, under 18, etc.",
+				"name": "jobLevel",
+				"in": "query",
+				"example": "employee",
+				"schema": {
+					"type": "string",
+					"enum": [
+						"apprentice",
+						"employee",
+						"employeeUnder18",
+						"graduate",
+						"internship",
+						"manager"
+					]
+				}
+			},
+			"page": {
+				"description": "The page number to get, as described by our [common pagination implementation](https://developer.sallinggroup.com/api-reference#topics-pagination)",
+				"in": "query",
+				"name": "page",
+				"required": false,
+				"schema": {
+					"default": 1,
+					"format": "int32",
+					"type": "integer"
+				}
+			},
+			"per_page": {
+				"description": "The number of items to receive in the response, as described by our [common pagination implementation](https://developer.sallinggroup.com/api-reference#topics-pagination)",
+				"in": "query",
+				"name": "per_page",
+				"required": false,
+				"schema": {
+					"default": 10,
+					"format": "int32",
+					"maximum": 100,
+					"minimum": 1,
+					"type": "integer"
+				}
+			},
+			"radius": {
+				"description": "Filter out entities that are outside of a given distance from the specified geo location. Specified in kilometres. Default is 5 and takes up to 2 decimals. Has no effect if geo is undefined.",
+				"in": "query",
+				"name": "radius",
+				"schema": {
+					"format": "double",
+					"type": "number"
+				}
+			},
+			"region": {
+				"description": "Only return entities located in the given region.",
+				"in": "query",
+				"name": "region",
+				"required": false,
+				"schema": {
+					"type": "string"
+				}
+			},
+			"zip": {
+				"description": "Only return entities located in the given postal code. Local postal code format.",
+				"in": "query",
+				"name": "zip",
+				"required": false,
+				"schema": {
+					"type": "string"
+				}
+			}
+		},
+		"responses": {
+			"400": {
+				"description": "Bad Request. We could not make sense of the query parameters we were given.",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/Error"
+						}
+					}
+				}
+			},
+			"401": {
+				"description": "Unauthorized. We did not recognize the request's credentials and don't know who you are.",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/Error"
+						}
+					}
+				}
+			},
+			"403": {
+				"description": "Forbidden. The request's credentials were recognized, but do not have access to the resource.",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/Error"
+						}
+					}
+				}
+			},
+			"404": {
+				"description": "Not Found. The URL with the given input parameters returned no result.",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/Error"
+						}
+					}
+				}
+			},
+			"429": {
+				"description": "Too Many Requests. We've received too many requests with your credentials or from your IP lately.",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/Error"
+						}
+					}
+				}
+			},
+			"500": {
+				"description": "Internal Server Error. Most likely returned by the upstream server. The schema is controlled by the upstream server."
+			},
+			"503": {
+				"description": "Server unavailable."
+			},
+			"504": {
+				"description": "Gateway Timeout. We did not receive a timely response from the upstream server.",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/Error"
+						}
+					}
+				}
+			}
+		},
+		"schemas": {
+			"Address": {
+				"properties": {
+					"city": {
+						"description": "City name",
+						"example": "København K",
+						"type": "string"
+					},
+					"country": {
+						"description": "[ISO 3166-2 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country code",
+						"example": "DK",
+						"type": "string"
+					},
+					"street": {
+						"description": "Street name and number",
+						"example": "Vimmelskaftet 45",
+						"type": "string"
+					},
+					"zip": {
+						"description": "Zip / Postal code",
+						"example": "1161",
+						"type": "string"
+					}
+				}
+			},
+			"Attributes": {
+				"type": "object",
+				"properties": {
+					"babyChanging": {
+						"description": "Does the store have baby changing facilities?",
+						"type": "boolean"
+					},
+					"bakery": {
+						"description": "Does the store have a bakery?",
+						"type": "boolean"
+					},
+					"carlsJunior": {
+						"description": "Does the store have a Carls' Jr. restaurant?",
+						"type": "boolean"
+					},
+					"clickAndCollect": {
+						"description": "Does the store have clickAndCollect?",
+						"type": "boolean"
+					},
+					"enablingFacilities": {
+						"description": "Does the store have enabling facilities?",
+						"type": "boolean"
+					},
+					"flowers": {
+						"description": "Does the store have a flower section?",
+						"type": "boolean"
+					},
+					"foodClickAndCollect": {
+						"description": "Does the store have foodClickAndCollect?",
+						"type": "boolean"
+					},
+					"garden": {
+						"description": "Does the store have a garden section?",
+						"type": "boolean"
+					},
+					"holidayOpen": {
+						"description": "Is the store open during holidays?",
+						"type": "boolean"
+					},
+					"nonFood": {
+						"type": "boolean"
+					},
+					"open247": {
+						"description": "Is the store open 24/7 (all hours of the day, all days of the week)?",
+						"type": "boolean"
+					},
+					"parking": {
+						"description": "Does the store have a parking lot for customers?",
+						"type": "string"
+					},
+					"parkingRestrictions": {
+						"description": "Does the store's parking lot have parking restrictions?",
+						"type": "boolean"
+					},
+					"petFood": {
+						"description": "Does the store have a pet food section?",
+						"type": "boolean"
+					},
+					"pharmacy": {
+						"description": "Does the store sell pharmaceuticals?",
+						"type": "boolean"
+					},
+					"smileyscheme": {
+						"description": "ID of the Smiley Scheme for the store.",
+						"example": "45965",
+						"type": "string"
+					},
+					"spotFood": {
+						"description": "Does the store have Spot Food?",
+						"type": "boolean"
+					},
+					"spotNonfood": {
+						"description": "Does the store have Spot Nonfood?",
+						"type": "boolean"
+					},
+					"starbucks": {
+						"description": "Does the store have a Starbucks?",
+						"type": "boolean"
+					},
+					"swipBox": {
+						"description": "Does the store have a SwipBox?",
+						"type": "boolean"
+					},
+					"wc": {
+						"description": "Does the store have toilets for customers?",
+						"type": "boolean"
+					},
+					"wifi": {
+						"description": "Does the store have open WiFi for customers?",
+						"type": "boolean"
+					}
+				}
+			},
+			"Brand": {
+				"type": "string",
+				"enum": [
+					"bilka",
+					"foetex",
+					"netto",
+					"basalt",
+					"salling",
+					"br",
+					"carlsjr",
+					"starbucks"
+				]
+			},
+			"Clearance": {
+				"description": "Up-to-date food discount information.",
+				"properties": {
+					"offer": {
+						"$ref": "#/components/schemas/Offer"
+					},
+					"product": {
+						"$ref": "#/components/schemas/Product"
+					}
+				},
+				"type": "object"
+			},
+			"Country": {
+				"type": "string",
+				"enum": ["DE", "DK", "PL", "SE"]
+			},
+			"Deviation": {
+				"properties": {
+					"closeTime": {
+						"description": "The time when the store closes on the days this deviation is valid for.",
+						"example": "22:00",
+						"type": "string"
+					},
+					"name": {
+						"description": "The name of this deviation. Usually the holiday causing this deviation in opening hours.",
+						"example": "Påskedag",
+						"type": "string"
+					},
+					"opentime": {
+						"description": "The time when the store opens on the days this deviation is valid for.",
+						"example": "07:00",
+						"type": "string"
+					},
+					"validFrom": {
+						"description": "Date from which this deviation is in effect. (inclusive)",
+						"example": "2020-04-01",
+						"type": "string"
+					},
+					"validTo": {
+						"description": "Date on which this deviation ceases to be in effect. (inclusive)",
+						"example": "2020-04-01",
+						"type": "string"
+					}
+				},
+				"type": "object"
+			},
+			"Error": {
+				"properties": {
+					"developerMessage": {
+						"type": "string",
+						"description": "A human-readable error message intended for developer consumption (as opposed to programmatic consumption)."
+					},
+					"errorCode": {
+						"description": "API defined error codes",
+						"format": "int32",
+						"type": "integer"
+					},
+					"moreInfo": {
+						"description": "URI for more detailed information",
+						"type": "string"
+					},
+					"userMessage": {
+						"type": "string"
+					}
+				}
+			},
+			"FoodWaste": {
+				"description": "Provide all up-to-date food discounts in a store.",
+				"properties": {
+					"clearances": {
+						"description": "The list of available food clearances.",
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/Clearance"
+						}
+					},
+					"store": {
+						"type": "object",
+						"properties": {
+							"address": {
+								"$ref": "#/components/schemas/Address"
+							},
+							"brand": {
+								"$ref": "#/components/schemas/Brand"
+							},
+							"coordinates": {
+								"description": "The coordinates in GeoJSON format, an array with 2 elements, longitude and latitude in that order.",
+								"example": [10.104849, 56.182413],
+								"items": {
+									"format": "double",
+									"type": "number"
+								},
+								"type": "array"
+							},
+							"hours": {
+								"description": "Opening hours for the store",
+								"items": {
+									"$ref": "#/components/schemas/Hour"
+								},
+								"type": "array"
+							},
+							"name": {
+								"description": "Store name",
+								"example": "Bilka Esbjerg",
+								"type": "string"
+							},
+							"id": {
+								"description": "Unique identifier representing a specific store",
+								"example": "efba0457-090e-4132-81ba-c72b4c8e7fee",
+								"format": "uuid",
+								"type": "string"
+							},
+							"type": {
+								"description": "GeoJSON object type",
+								"enum": ["Point"],
+								"example": "Point",
+								"type": "string"
+							}
+						}
+					}
+				},
+				"type": "object"
+			},
+			"Holiday": {
+				"type": "object",
+				"properties": {
+					"date": {
+						"description": "The date of the holiday in YYYY-MM-DD format.",
+						"example": "2019-01-01",
+						"type": "string"
+					},
+					"name": {
+						"description": "The name of the holiday in the language specified by the translation parameter.",
+						"example": "Nytårsdag",
+						"type": "string"
+					},
+					"nationalHoliday": {
+						"description": "Whether or not the holiday is a national holiday, warranting a day off.",
+						"example": true,
+						"type": "boolean"
+					}
+				}
+			},
+			"Hour": {
+				"properties": {
+					"close": {
+						"description": "The time the store closes on the day specified in date",
+						"format": "date-time",
+						"type": "string",
+						"nullable": true
+					},
+					"closed": {
+						"description": "Whether the store is closed on this entire day or not",
+						"example": false,
+						"type": "boolean"
+					},
+					"date": {
+						"description": "The date when the hours are valid",
+						"example": "2019-04-04",
+						"format": "full-date",
+						"type": "string"
+					},
+					"open": {
+						"description": "The time the store opens on the day specified in date",
+						"format": "date-time",
+						"type": "string",
+						"nullable": true
+					},
+					"type": {
+						"description": "The type of area that is affected by these opening hours",
+						"example": "store",
+						"enum": [
+							"store",
+							"gardencenter",
+							"bakery",
+							"bilkatogo",
+							"foodClickCollect",
+							"nonfoodClickCollect",
+							"flowers",
+							"vareudlevering",
+							"servicecenter",
+							"bistro",
+							"quickfood",
+							"sushi",
+							"pakketarn"
+						],
+						"format": "string",
+						"type": "string"
+					},
+					"customerFlow": {
+						"description": "The prediction of customer flows of a shop in a day. Each number represents the predicted customer flow per hour in the range of [0, 1]. The higher the number, the busier the shop. The prediction time series starts at midnight. It only appears when the type is 'store' or 'bilkatogo'.",
+						"example": [
+							0, 0, 0, 0, 0, 0, 0, 0.12, 0.69, 0.72, 0.11, 0.45, 0.42, 0.73,
+							0.35, 0.91, 0.5, 0.74, 0.66, 0.66, 0, 0, 0, 0
+						],
+						"items": {
+							"type": "number"
+						},
+						"type": "array"
+					}
+				}
+			},
+			"Job": {
+				"properties": {
+					"address": {
+						"$ref": "#/components/schemas/Address"
+					},
+					"brand": {
+						"$ref": "#/components/schemas/Brand"
+					},
+					"title": {
+						"type": "string",
+						"example": "1. assistent - Højbjerg",
+						"description": "Job listing title in local language."
+					},
+					"description": {
+						"type": "string",
+						"example": "<h2 align=\"left\">F&oslash;rsteassistent&nbsp;i Netto</h2>\r<br><p><strong>S&aring;dan er vi</strong></p><p>Vi savner en god kollega, der kan spille sammen med os og vores kunder. Vi har et uformelt milj&oslash;, hvor t&aelig;t samspil, h&oslash;j energi, humor og gejst er v&aelig;sentlige ting i dagligdagen. Det stiller naturligvis s&aelig;rlige krav til os som team.</p> <p><strong>S&aring;dan er dine opgaver, og s&aring;dan er du</strong></p><p>Du er med overalt i butikken, men har s&aelig;rligt ansvar for dine egne omr&aring;der i butikken. Nogle gange om ugen har du ledelsesansvaret i et kortere tidsrum, n&aring;r du &aring;bner eller lukker butikken.</p> <p>Du s&aelig;tter en &aelig;re i at g&oslash;re butikken p&aelig;n og pr&aelig;sentabel.</p><p>Naturligvis er det en fordel, at du er uddannet i butik og har haft et vist ledelsesansvar, men vi s&oslash;rger for en grundig opl&aelig;ring.</p><p><strong>Personalegoder</strong></p> <p>Som ansat i Netto har du mulighed for at benytte en lang r&aelig;kke personalegoder.</p><p> <ul> <li>Personalerabat i Bilka, f&oslash;tex og&nbsp;Netto</li> <li>Leje af sommerhuse til favorable priser</li> <li>Frisk frugt og gr&oslash;nt p&aring; arbejdspladsen hver dag</li> <li>....i alt omkring 100 - interne og eksterne - rabatordninger</li> </ul> </p> <p><strong>S&aring;dan</strong></p> <p>Har du lyst til at blive Netto's friske ansigt udadtil, s&aring; send en ans&oslash;gning. Ans&oslash;gninger behandles l&oslash;bende. Vi gl&aelig;der os til at h&oslash;re fra dig.</p>\r<br>",
+						"description": "Longer job listing description in local language. Includes HTML tags."
+					},
+					"start": {
+						"type": "string",
+						"example": "2019-04-22",
+						"format": "date",
+						"description": "The time and date that employment starts."
+					},
+					"hours": {
+						"type": "string",
+						"example": "37",
+						"description": "Either a number of hours (like \"37\") or a textual description (like \"deltid\")"
+					},
+					"applicationLink": {
+						"type": "string",
+						"example": "https://career5.successfactors.eu/career?career_ns=job_listing&company=DSG&navBarLevel=JOB_SEARCH&rcm_site_locale=da_DK&career_job_req_id=22808"
+					},
+					"created": {
+						"type": "string",
+						"example": "2019-04-04T02:11:36.230Z"
+					},
+					"modified": {
+						"type": "string",
+						"example": "2019-04-04T02:11:36.230Z"
+					},
+					"id": {
+						"description": "Unique identifier representing a specific job",
+						"example": "fcfb898a-8ac4-4e20-8699-597cf662545a",
+						"format": "uuid",
+						"type": "string"
+					},
+					"published": {
+						"type": "string",
+						"example": "2019-04-03T09:31:54.000Z"
+					},
+					"premium": {
+						"type": "boolean"
+					},
+					"unsolicited": {
+						"type": "boolean"
+					},
+					"trainee": {
+						"type": "boolean"
+					},
+					"country": {
+						"$ref": "#/components/schemas/Country"
+					},
+					"region": {
+						"type": "string",
+						"example": "midtjylland"
+					},
+					"categories": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/JobCategory"
+						}
+					},
+					"employmentType": {
+						"type": "string",
+						"example": "fullTime",
+						"enum": ["fullTime", "partTime"]
+					},
+					"jobLevel": {
+						"type": "string",
+						"example": "employee",
+						"enum": [
+							"apprentice",
+							"employee",
+							"employeeUnder18",
+							"graduate",
+							"internship",
+							"manager"
+						]
+					},
+					"url": {
+						"type": "string",
+						"example": "https://sallinggroup.com/job/ledige-stillinger/job/?id=fcfb898a-8ac4-4e20-8699-597cf662545a"
+					}
+				}
+			},
+			"JobCategory": {
+				"type": "string",
+				"example": "salesGeneral",
+				"enum": [
+					"administration",
+					"baker",
+					"businessDevelopment",
+					"butcher",
+					"cafeRestaurant",
+					"cashier",
+					"communication",
+					"customerInsight",
+					"customerService",
+					"customerServices",
+					"designAndConstruction",
+					"digital",
+					"distributionAndWarehouse",
+					"eCommerce",
+					"finance",
+					"humanResources",
+					"internationalSourcing",
+					"inventory",
+					"it",
+					"legal",
+					"logisticsSupplyChain",
+					"marketing",
+					"mercer",
+					"privateLabel",
+					"procurementAndPurchasingFreshFood",
+					"procurementAndPurchasingGrocery",
+					"procurementAndPurchasingNonFood",
+					"procurementAndPurchasingTextile",
+					"projectProcessManagement",
+					"propertyDevelopment",
+					"quality",
+					"salesElectronics",
+					"salesFood",
+					"salesFruitVegetables",
+					"salesGeneral",
+					"salesHouseGarden",
+					"salesNearfood",
+					"salesNonfood",
+					"salesOperations",
+					"salesTextile",
+					"spaceManagementAndPromotion",
+					"technicalServicesFacility",
+					"warehouseGoodsHandling"
+				]
+			},
+			"Offer": {
+				"description": "Discount detail on a product.",
+				"properties": {
+					"currency": {
+						"description": "The currency all prices are presented in.",
+						"enum": ["DKK"],
+						"type": "string",
+						"example": "DKK"
+					},
+					"discount": {
+						"description": "The amount of money this offer discounts the product by.",
+						"type": "number",
+						"format": "double",
+						"example": 6
+					},
+					"ean": {
+						"description": "The EAN code for this specific offer.",
+						"type": "string",
+						"example": "20002275"
+					},
+					"endTime": {
+						"description": "The end of the validity period of this offer in ISO 8601 format.",
+						"format": "local-date-time",
+						"type": "string",
+						"example": "2019-11-14T23:00:00.000Z"
+					},
+					"lastUpdate": {
+						"description": "The last time this offer was updated in ISO 8601 format.",
+						"format": "local-date-time",
+						"type": "string",
+						"example": "2019-10-28T15:34:39.000Z"
+					},
+					"newPrice": {
+						"description": "The amount of money to pay for this offer.",
+						"type": "number",
+						"format": "double",
+						"example": 18
+					},
+					"originalPrice": {
+						"description": "The price of the product without a discount.",
+						"type": "number",
+						"format": "double",
+						"example": 22
+					},
+					"percentDiscount": {
+						"description": "The percentage difference between original price and the new price.",
+						"format": "double",
+						"type": "number",
+						"example": 18.18
+					},
+					"startTime": {
+						"description": "The beginning of the validity period of this offer in ISO 8601 format.",
+						"format": "local-date-time",
+						"type": "string",
+						"example": "2019-10-18T08:41:17.000Z"
+					},
+					"stock": {
+						"description": "The amount of this product that is discounted in the store.",
+						"type": "number",
+						"example": 88
+					},
+					"stockUnit": {
+						"description": "The unit that stock is represented in.",
+						"enum": ["each", "kg"],
+						"type": "string",
+						"example": "each"
+					}
+				},
+				"type": "object"
+			},
+			"Product": {
+				"description": "Illustrate product via categories (optional), description, image and ean.",
+				"properties": {
+					"categories": {
+						"description": "The customer facing hierachy representing category levels.",
+						"properties": {
+							"da": {
+								"description": "The Danish categories representation.",
+								"type": "string",
+								"example": "Mejeri & køl>Pålæg>Kødpålæg>Pålæg i skiver"
+							},
+							"en": {
+								"description": "The English categories representation.",
+								"type": "string",
+								"example": "Dairy And Cold Storage>Lunch Meats>Meat>Sliced Lunch Meats"
+							}
+						},
+						"type": "object"
+					},
+					"description": {
+						"description": "The text shown on the price badge in the stores.",
+						"type": "string",
+						"example": "WASA HUSMAN 520 G"
+					},
+					"ean": {
+						"description": "The EAN code for the product.",
+						"type": "string",
+						"example": "5710405175931"
+					},
+					"image": {
+						"description": "A link to an image of the product.",
+						"type": "string",
+						"nullable": true,
+						"example": "https://dam.dsg.dk/services/assets.img/id/24b501d6-7c9f-42ed-bb7a-9b932f49d46d/size/WEB1024x1024.jpg"
+					}
+				},
+				"type": "object"
+			},
+			"Schedule": {
+				"properties": {
+					"friday": {
+						"$ref": "#/components/schemas/ScheduleDay"
+					},
+					"monday": {
+						"$ref": "#/components/schemas/ScheduleDay"
+					},
+					"name": {
+						"description": "The name of this schedule.",
+						"example": "Påskeugen",
+						"type": "string"
+					},
+					"saturday": {
+						"$ref": "#/components/schemas/ScheduleDay"
+					},
+					"sunday": {
+						"$ref": "#/components/schemas/ScheduleDay"
+					},
+					"thursday": {
+						"$ref": "#/components/schemas/ScheduleDay"
+					},
+					"tuesday": {
+						"$ref": "#/components/schemas/ScheduleDay"
+					},
+					"validFrom": {
+						"description": "Date from which this schedule is in effect. (inclusive)",
+						"example": "2020-04-06",
+						"type": "string"
+					},
+					"validTo": {
+						"description": "Date on which this schedule ceases to be in effect. (inclusive)",
+						"example": "2020-04-12",
+						"type": "string"
+					},
+					"wednesday": {
+						"$ref": "#/components/schemas/ScheduleDay"
+					}
+				},
+				"type": "object"
+			},
+			"ScheduleDay": {
+				"properties": {
+					"closeTime": {
+						"description": "The time when the store closes on this day.",
+						"example": "22:00",
+						"type": "string"
+					},
+					"opentime": {
+						"description": "The time when the store opens on this day.",
+						"example": "07:00",
+						"type": "string"
+					}
+				},
+				"type": "object"
+			},
+			"Store": {
+				"properties": {
+					"address": {
+						"$ref": "#/components/schemas/Address"
+					},
+					"attributes": {
+						"$ref": "#/components/schemas/Attributes"
+					},
+					"brand": {
+						"description": "The Salling Group store brand",
+						"example": "netto",
+						"enum": [
+							"basalt",
+							"bilka",
+							"br",
+							"carlsjr",
+							"foetex",
+							"netto",
+							"salling",
+							"starbucks"
+						],
+						"type": "string"
+					},
+					"coordinates": {
+						"description": "The coordinates in GeoJSON format, an array with 2 elements, longitude and latitude in that order.",
+						"example": [10.104849, 56.182413],
+						"items": {
+							"format": "double",
+							"type": "number"
+						},
+						"type": "array"
+					},
+					"created": {
+						"description": "A timestamp of when the API definition of this store was created in [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) date-time format",
+						"format": "date-time",
+						"type": "string"
+					},
+					"distance_km": {
+						"description": "Distance from store to the geolocation used in request. Distance is only calculated in response to requests with geolocation",
+						"example": 3.5,
+						"format": "double",
+						"type": "number"
+					},
+					"hours": {
+						"description": "Opening hours for the store",
+						"items": {
+							"$ref": "#/components/schemas/Hour"
+						},
+						"type": "array"
+					},
+					"id": {
+						"description": "Unique identifier representing a specific store",
+						"example": "efba0457-090e-4132-81ba-c72b4c8e7fee",
+						"format": "uuid",
+						"type": "string"
+					},
+					"modified": {
+						"description": "A timestamp of when the API definition of this store was last updated in [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) date-time format",
+						"format": "date-time",
+						"type": "string"
+					},
+					"name": {
+						"description": "Store name",
+						"example": "Bilka Esbjerg",
+						"type": "string"
+					},
+					"phoneNumber": {
+						"description": "The phone number for reaching the store",
+						"example": "87455000",
+						"type": "string"
+					},
+					"sapSiteId": {
+						"description": "The stores corresponding SAP site ID",
+						"example": "1651",
+						"type": "string"
+					},
+					"type": {
+						"description": "GeoJSON object type",
+						"enum": ["Point"],
+						"example": "Point",
+						"type": "string"
+					},
+					"vikingStoreId": {
+						"description": "The stores corresponding Viking Store Number",
+						"example": "5251",
+						"type": "string"
+					}
+				}
+			},
+			"SuggestionsObject": {
+				"properties": {
+					"suggestions": {
+						"$ref": "#/components/schemas/Suggestions"
+					}
+				}
+			},
+			"Suggestions": {
+				"type": "array",
+				"items": {
+					"$ref": "#/components/schemas/Suggestion"
+				}
+			},
+			"Suggestion": {
+				"properties": {
+					"title": {
+						"type": "string",
+						"example": "HAVREGRYN ØKO OG GLUTENFRI 1000G",
+						"description": "The suggested product's name"
+					},
+					"id": {
+						"type": "string",
+						"example": "29437701",
+						"description": "The suggested product's Salling Group product id"
+					},
+					"prod_id": {
+						"type": "string",
+						"example": "43322",
+						"description": "The suggested product's Bilkatogo product id"
+					},
+					"price": {
+						"type": "number",
+						"example": 28.95,
+						"format": "float"
+					},
+					"description": {
+						"type": "string",
+						"example": "havregryn øko og glutenfri 1000g",
+						"description": "The description of the suggested product"
+					},
+					"link": {
+						"type": "string",
+						"example": "https://www.bilkatogo.dk/produkt/43322/",
+						"description": "The product link on Bilkatogo.dk",
+						"format": "URL"
+					},
+					"img": {
+						"type": "string",
+						"example": "https://image.prod.iposeninfra.com/bilkaimg.php?pid=43322&imgType=jpeg",
+						"description": "The primary image of the suggested product",
+						"format": "URL"
+					}
+				}
+			}
+		},
+		"securitySchemes": {
+			"Bearer": {
+				"description": "Used in **untrusted environments** like Single Page Applications that can not keep a secret, this type of authentication lets you pass a token issued on [our Developer Portal](https://developer.sallinggroup.com). Not all API endpoints are available with Bearer authentication. [Read more about our authentication.](https://developer.sallinggroup.com/api-reference#topics-authentication)",
+				"type": "http",
+				"scheme": "bearer"
+			},
+			"JWT": {
+				"description": "Used in **trusted environments** like secured backends that can keep a secret, this type of authentication requires that you describe the request you're about to make in a payload, sign this payload with your secret, and use the resulting JWT as a token. All API endpoints are available with JWT authentication. [Read more about our authentication.](https://developer.sallinggroup.com/api-reference#topics-authentication)",
+				"type": "http",
+				"scheme": "bearer",
+				"bearerFormat": "JWT"
+			}
+		}
+	}
+}
