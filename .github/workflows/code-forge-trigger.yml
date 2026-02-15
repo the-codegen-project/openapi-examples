@@ -16,4 +16,4 @@ jobs:
         with:
           spec_id: 4aa2cde8-3976-4b0a-b9b8-4fef6d440e0e
           api_token: ${{ secrets.CODEFORGE_API_TOKEN }}
-          api_url: 'http://localhost:4000'
+          api_url: 'https://juicily-abstemious-sherilyn.ngrok-free.dev'
