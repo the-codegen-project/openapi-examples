@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Trigger SDK Generation
-        uses: the-codegen-project/github-action@v0.2.1
+        uses: the-codegen-project/github-action@v0.2.2
         with:
           spec_id: 4aa2cde8-3976-4b0a-b9b8-4fef6d440e0e
           api_token: ${{ secrets.CODEFORGE_API_TOKEN }}
