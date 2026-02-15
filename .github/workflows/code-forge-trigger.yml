@@ -1,0 +1,19 @@
+name: Regenerate SDKs
+
+on:
+  push:
+    paths:
+      - "example/example.yml"
+
+jobs:
+  generate-sdks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Trigger SDK Generation
+        uses: code-forge/generation-action@v0
+        with:
+          spec_id: 4aa2cde8-3976-4b0a-b9b8-4fef6d440e0e
+          api_token: ${{ secrets.CODEFORGE_API_TOKEN }}
+          api_url: 'http://localhost:4000'
